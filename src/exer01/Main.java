@@ -1,5 +1,7 @@
 package exer01;
 
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
@@ -27,25 +29,33 @@ public class Main {
         boolean lista = true;
 
         while (lista) {
-            System.out.println("Digite o tipo de alimento que deseja adicionar (Verdura / Legumes / Grãos / Outros)");
-            String tipoAlimento = resposta.next();
 
             int codigoAlimento = 0;
+            boolean escreva = true;
 
-            try {
-                if (tipoAlimento.equalsIgnoreCase("Verdura") || tipoAlimento.equalsIgnoreCase("Verduras")) {
-                    codigoAlimento = 1;
-                } else if (tipoAlimento.equalsIgnoreCase("Legume") || tipoAlimento.equalsIgnoreCase("Legumes")) {
-                    codigoAlimento = 2;
-                } else if (tipoAlimento.equalsIgnoreCase("Grão") || tipoAlimento.equalsIgnoreCase("Grãos")) {
-                    codigoAlimento = 3;
-                } else if (tipoAlimento.equalsIgnoreCase("Outro") || tipoAlimento.equalsIgnoreCase("Outros")) {
-                    codigoAlimento = 4;
-                } else {
-                    throw new IllegalArgumentException();
+           while (escreva) { //Tive que botar isso porque ele simplesmente não tava resetando quando dava Tipo de alimento inválido
+                System.out.println("Digite o tipo de alimento que deseja adicionar (Verdura / Legumes / Grãos / Outros)");
+                String tipoAlimento = resposta.nextLine();
+
+                try {
+                    if (tipoAlimento.equalsIgnoreCase("Verdura") || tipoAlimento.equalsIgnoreCase("Verduras")) {
+                        codigoAlimento = 1;
+                        escreva = false;
+                    } else if (tipoAlimento.equalsIgnoreCase("Legume") || tipoAlimento.equalsIgnoreCase("Legumes")) {
+                        codigoAlimento = 2;
+                       escreva = false;
+                    } else if (tipoAlimento.equalsIgnoreCase("Grão") || tipoAlimento.equalsIgnoreCase("Grãos")) {
+                        codigoAlimento = 3;
+                        escreva = false;
+                    } else if (tipoAlimento.equalsIgnoreCase("Outro") || tipoAlimento.equalsIgnoreCase("Outros")) {
+                        codigoAlimento = 4;
+                        escreva = false;
+                    } else {
+                        throw new IllegalArgumentException();
+                    }
+                } catch (IllegalArgumentException e) {
+                    System.out.println("Tipo de alimento inválido");
                 }
-            } catch (IllegalArgumentException e) {
-                System.out.println("Tipo de alimento inválido");
             }
 
             boolean repetir = true;
@@ -58,11 +68,14 @@ public class Main {
                     if (codigoAlimento == 1 || codigoAlimento == 3) {
                         System.out.println("Insira a quantidade em gramas:");
                         String entrada = resposta.next();
+                        BigDecimal bigQtdArredondada = new BigDecimal(entrada).setScale(1, RoundingMode.UNNECESSARY);
+                        BigDecimal bigQtd = new BigDecimal(entrada);
+                        boolean saoIguais = bigQtdArredondada.equals(bigQtd);
                         if (entrada.isEmpty()) {
                             throw new UnsupportedOperationException();
                         } else {
                             double qtdGramas = Double.parseDouble(entrada);
-                            if (qtdGramas == Math.floor(qtdGramas)) {
+                            if (!saoIguais) {
                                 throw new NumberFormatException();
                             }
                             if (qtdGramas < 0) {
@@ -128,8 +141,8 @@ public class Main {
             //Após inserir a quantidade, o usuário deve inserir o nome do alimento
 
             System.out.println("Escreva o nome do alimento comprado:");
-            String nomeAlimento = resposta.next();
             resposta.nextLine();
+            String nomeAlimento = resposta.nextLine();
 
             try {
                 if (nomeAlimento.isEmpty()) {
@@ -152,52 +165,106 @@ public class Main {
                 System.out.println("Não é permitido inserir valor vazio");
             }
 
-            System.out.println("Deseja inserir mais um item na lista? (s/n)");
+            System.out.println("Deseja inserir mais um item na lista? (digite 'n' para sair)");
             String deNovo = resposta.next();
 
-            if (deNovo.equalsIgnoreCase("s")){
-
-            } else if (deNovo.equalsIgnoreCase("n")){
-                lista = false;
-            } else {
+            if (deNovo.equalsIgnoreCase("n")){
                 lista = false;
             }
 
+            resposta.nextLine(); //Isso tem que ficar aqui pq senão manda o s pro tipoAlimento
+
         }
 
+        //É impossível printar exatamente como pede no exercício porque Legumes é com unidade e Verduras é com quilo, e não o contrário
+
         System.out.println("Lista de compras:");
+        System.out.println();
+        System.out.println("----------");
+        System.out.println();
+
+        //---
 
         if (nomesVerduras.isEmpty()){
 
         } else {
-            System.out.println("VERDURAS:");
+            System.out.println("Verduras:");
             System.out.print("[");
             for (int i = 0; i < nomesVerduras.size(); i++){
-                System.out.print(nomesVerduras.get(i) + "-" + qtdVerduras.get(i) + " kg");
+                System.out.print(nomesVerduras.get(i) + " - " + qtdVerduras.get(i) + " kg");
                 if (i + 1 < nomesVerduras.size()){
                     System.out.print(", ");
                 }
             }
             System.out.println("]");
             System.out.println();
+            System.out.println("A quantidade de alimentos do tipo verdura a ser comprada é: " + nomesVerduras.size());
+            System.out.println();
+            System.out.println("----------");
+            System.out.println();
         }
+
+        //---
 
         if (nomesLegumes.isEmpty()){
 
         } else {
-            System.out.println("LEGUMES:");
+            System.out.println("Legumes:");
+            System.out.print("[");
+            for (int i = 0; i < nomesLegumes.size(); i++){
+                System.out.print(nomesLegumes.get(i) + " - " + qtdLegumes.get(i) + " unidades");
+                if (i + 1 < nomesLegumes.size()){
+                    System.out.print(", ");
+                }
+            }
+            System.out.println("]");
+            System.out.println();
+            System.out.println("A quantidade de alimentos do tipo legumes a ser comprada é: " + nomesLegumes.size());
+            System.out.println();
+            System.out.println("----------");
+            System.out.println();
         }
+
+        //---
 
         if (nomesGraos.isEmpty()){
 
         } else {
-            System.out.println("GRÃOS:");
+            System.out.println("Grãos:");
+            System.out.print("[");
+            for (int i = 0; i < nomesGraos.size(); i++){
+                System.out.print(nomesGraos.get(i) + " - " + qtdGraos.get(i) + " kg");
+                if (i + 1 < nomesGraos.size()){
+                    System.out.print(", ");
+                }
+            }
+            System.out.println("]");
+            System.out.println();
+            System.out.println("A quantidade de alimentos do tipo grãos a ser comprada é: " + nomesGraos.size());
+            System.out.println();
+            System.out.println("----------");
+            System.out.println();
         }
+
+        //---
 
         if (nomesOutros.isEmpty()){
 
         } else {
-            System.out.println("OUTROS:");
+            System.out.println("Outros:");
+            System.out.print("[");
+            for (int i = 0; i < nomesOutros.size(); i++){
+                System.out.print(nomesOutros.get(i) + " - " + qtdOutros.get(i) + " unidades");
+                if (i + 1 < nomesOutros.size()){
+                    System.out.print(", ");
+                }
+            }
+            System.out.println("]");
+            System.out.println();
+            System.out.println("A quantidade de alimentos do tipo outros a ser comprada é: " + nomesOutros.size());
+            System.out.println();
+            System.out.println("----------");
+            System.out.println();
         }
     }
 }
